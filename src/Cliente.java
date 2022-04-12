@@ -30,9 +30,9 @@ public class Cliente {
     @Override
     public String toString() {
         return "Cliente{" +
-                "nome='" + nome + '\'' +
-                ", endereco='" + endereco + '\'' +
-                ", telefone='" + telefone + '\'' +
+                "nome='" + getNome() + '\'' +
+                ", endereco='" + getEndereco() + '\'' +
+                ", telefone='" + getTelefone() + '\'' +
                 ", carro favorito='" + getCarroFavorito() + '\'' +
                 '}';
     }

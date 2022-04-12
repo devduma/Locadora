@@ -45,7 +45,6 @@ public class Carro implements Comparable<Carro>{
 
     @Override
     public int compareTo(Carro carro) {
-        //return this.valor - carro.valor;
         return Double.compare(this.valor, carro.valor);
     }
 }
