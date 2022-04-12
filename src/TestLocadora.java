@@ -3,7 +3,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 public class TestLocadora {
     public static Integer NUMERO_CARROS = 10;
 
@@ -31,64 +30,57 @@ public class TestLocadora {
         carros[9] = new Carro("len-3012", "Peugeot", "verde", "405",
                 420.50, false);
 
-        // Opção para cadastrar veículos
-        /* try (Scanner ler = new Scanner(System.in)) {
-            System.out.println("Complete o cadastro com 3 novos veículos");
-            int i = 1;
-            do {
-                carros[i + 6] = cadastrarVeiculo(ler, i);
-                i++;
-            } while (i <= 3);
-        } */
-
         Arrays.sort(carros);
 
         try (Scanner ler = new Scanner(System.in)) {
             int option;
-            String cliente;
+            String nomeCliente;
             StringBuilder log = new StringBuilder();
             Queue<String> listaEspera = new ArrayDeque<>();
+            Queue<Cliente> clientes = new ArrayDeque<>();
+
             do {
                 System.out.println("\n\nEscolha uma das opções do menu");
                 System.out.println("\n\t 1 - Empréstimo \n\t 2 - Devolução" +
-                        " \n\t 3 - Veículos Disponíveis \n\t 4 - Lista de Espera" +
-                        "\n\t 5 - Relatório \n\t 0 - Sair do programa");
+                        "\n\t 3 - Cadastrar Cliente \n\t 4 - Veículos Disponíveis" +
+                        " \n\t 5 - Lista de Espera \n\t 6 - Relatório \n\t 0 - Sair do programa");
                 option = ler.nextInt();
 
                 if (option != 0) {
                     switch (option) {
                         case 1: // Empréstimo
+                            ler.nextLine();
                             System.out.println("\nNome do Cliente:");
-                            cliente = ler.next();
+                            nomeCliente = ler.nextLine();
                             if (listaVeiculos(carros) > 0) {
                                 Carro carroEscolhido = emprestarCarro(ler, carros);
                                 System.out.println(carroEscolhido.getMarca() + "/" + carroEscolhido.getModelo());
 
-                                gravarEmprestimo(carroEscolhido, cliente);
-                                log.append(montaRelatorio(carroEscolhido, cliente, "EMPRESTADO"));
+                                gravarEmprestimo(carroEscolhido, nomeCliente);
+                                log.append(montarRelatorio(carroEscolhido, nomeCliente, "EMPRESTADO"));
 
                                 System.out.printf("%nRelatório de movimentação: %n%s ", log);
                             } else { // inclui cliente na lista de espera
-                                listaEspera.add(cliente);
-                                System.out.printf("Cliente %s incluído(a) na lista de espera", cliente);
+                                listaEspera.add(nomeCliente);
+                                System.out.printf("Cliente %s incluído(a) na lista de espera", nomeCliente);
                             }
                             break;
 
                         case 2: // Devolução
                             System.out.println("\nPlaca do veículo:");
                             String placa = ler.next();
-                            Carro carroDevolvido = verificaPlaca(placa, carros);
+                            Carro carroDevolvido = verificarPlaca(placa, carros);
                             if (carroDevolvido != null){
                                 // placa encontrada; trata devolução
-                                cliente = carroDevolvido.getCliente();
+                                nomeCliente = carroDevolvido.getCliente();
                                 carroDevolvido.setPode_Alugar(true);
                                 carroDevolvido.setCliente("");
 
-                                log.append(montaRelatorio(carroDevolvido, cliente, "DEVOLVIDO"));
+                                log.append(montarRelatorio(carroDevolvido, nomeCliente, "DEVOLVIDO"));
                                 String clienteEspera = listaEspera.poll();
                                 if (clienteEspera != null) { // tem lista de espera?
                                     gravarEmprestimo(carroDevolvido, clienteEspera);
-                                    log.append(montaRelatorio(carroDevolvido, clienteEspera, "EMPRESTADO"));
+                                    log.append(montarRelatorio(carroDevolvido, clienteEspera, "EMPRESTADO"));
                                 }
                             }
                             else {
@@ -97,11 +89,17 @@ public class TestLocadora {
                             System.out.printf("%nRelatório de movimentação: %n%s ", log);
                             break;
 
-                        case 3: // lista veículos disponíveis para locação
+                        case 3: // Cadastrar cliente
+                            Cliente clienteCadastrado = cadastrarCliente(ler, carros);
+                            clientes.add(clienteCadastrado);
+                            System.out.println(clientes);
+                            break;
+
+                        case 4: // lista veículos disponíveis para locação
                             listaVeiculos(carros);
                             break;
 
-                        case 4: // mostra lista de espera de clientes
+                        case 5: // mostra lista de espera de clientes
                             System.out.println("Lista de Espera");
                             if (listaEspera.isEmpty())
                                 System.out.println("\tLista vazia");
@@ -109,7 +107,7 @@ public class TestLocadora {
                                 listaEspera.forEach(ls -> System.out.println(ls));
                             break;
 
-                        case 5: // relatório de movimentação de veículos (log)
+                        case 6: // relatório de movimentação de veículos (log)
                             System.out.printf("%nRelatório de movimentação: %n%s ", log);
                             break;
                     }
@@ -117,20 +115,6 @@ public class TestLocadora {
 
             } while (option != 0);
         }
-
-    }
-
-    private static int listaVeiculos(Carro[] carros) {
-        System.out.println("FIFTY CARS\n\nConfira nossos modelos:");
-        int numModelo = 0;
-        for (Carro c : carros) {
-            if (c.getPode_Alugar()) {
-                System.out.printf("%nModelo %d%nMarca: %s%nModelo: %s%nCor: %s%nPlaca: %s%n" +
-                                "Valor da diária: R$ %.2f%n", ++numModelo, c.getMarca(),
-                        c.getModelo(), c.getCor(), c.getPlaca(), c.getValor());
-            }
-        }
-        return numModelo;
     }
 
     private static Carro emprestarCarro(Scanner ler, Carro[] carros){
@@ -140,6 +124,7 @@ public class TestLocadora {
         System.out.println(carrosDisponiveis.stream().map(x -> x.getMarca() + "/" + x.getModelo() +
                 " R$ " + x.getValor()).collect(Collectors.toList()));
 
+        System.out.println("\nEscolha um dos carros disponíveis");
         int numCarroEscolhido = escolherCarro(ler, carrosDisponiveis.size());
 
         return carrosDisponiveis.get(numCarroEscolhido - 1);
@@ -149,7 +134,6 @@ public class TestLocadora {
         boolean carroOk = false;
         int carroEscolhido = 1;
         while (!carroOk) {
-            System.out.println("\nEscolha um dos carros disponíveis");
             try {
                 carroEscolhido = ler.nextInt();
                 if (carroEscolhido > 0 && carroEscolhido <= qdeCarros) {
@@ -169,7 +153,8 @@ public class TestLocadora {
         carro.setPode_Alugar(false);
         carro.setCliente(cliente);
     }
-    private static Carro verificaPlaca(String placa, Carro[] carros){
+
+    private static Carro verificarPlaca(String placa, Carro[] carros){
         List<Carro> carroDevolvido;
         carroDevolvido = Arrays.stream(carros).filter(x -> x.getPlaca().equals(placa))
                 .collect(Collectors.toList());
@@ -183,7 +168,7 @@ public class TestLocadora {
             return null;
     }
 
-    private static String montaRelatorio(Carro carro, String cliente, String movimentacao) {
+    private static String montarRelatorio(Carro carro, String cliente, String movimentacao) {
         DateTimeFormatter dataFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm");
         String dataCorrente = dataFormat.format(LocalDateTime.now());
         // Se não entrou 'Entrada do veículo de placa: <placa>'
@@ -191,6 +176,44 @@ public class TestLocadora {
         return String.format(" %s: Carro %s, %s, %s foi %s %s %s %n",
                 dataCorrente, carro.getMarca(), carro.getModelo(), carro.getPlaca(),
                 movimentacao, (movimentacao.equals("EMPRESTADO"))?"para":"por",cliente);
+    }
+
+    private static int listaVeiculos(Carro[] carros) {
+        System.out.println("FIFTY CARS\n\nConfira nossos modelos:");
+        int numModelo = 0;
+        for (Carro c : carros) {
+            if (c.getPode_Alugar()) {
+                System.out.printf("%nModelo %d%nMarca: %s%nModelo: %s%nCor: %s%nPlaca: %s%n" +
+                                "Valor da diária: R$ %.2f%n", ++numModelo, c.getMarca(),
+                        c.getModelo(), c.getCor(), c.getPlaca(), c.getValor());
+            }
+        }
+        return numModelo;
+    }
+
+    private static Cliente cadastrarCliente(Scanner ler, Carro[] carros){
+        List<Carro> carrosLocadora;
+        carrosLocadora = Arrays.stream(carros).collect(Collectors.toList());
+        ler.nextLine();
+
+        System.out.println("Cadastro de Cliente:");
+        System.out.println("\tNome do Cliente ");
+        String nome = ler.nextLine();
+
+        System.out.println("\tEndereço");
+        String endereco = ler.nextLine();
+
+        System.out.println("\tTelefone");
+        String telefone = ler.next();
+
+        System.out.println("Carros da Locadora");
+        System.out.println(carrosLocadora.stream().map(x -> x.getMarca() + "/" + x.getModelo() +
+                " R$ " + x.getValor()).collect(Collectors.toList()));
+
+        System.out.println("\nEscolha seu carro favorito da locadora");
+        int numCarroEscolhido = escolherCarro(ler, carrosLocadora.size());
+
+        return new Cliente(nome, endereco, telefone, carrosLocadora.get(numCarroEscolhido - 1));
     }
 
     private static Carro cadastrarVeiculo(Scanner ler, int i) {

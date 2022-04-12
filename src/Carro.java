@@ -3,7 +3,7 @@ public class Carro implements Comparable<Carro>{
     private final String marca;
     private final String cor;
     private final String modelo;
-    private double valor;
+    private final double valor;
     private boolean pode_alugar;
     private String cliente;
 
