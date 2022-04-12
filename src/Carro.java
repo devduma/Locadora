@@ -3,7 +3,7 @@ public class Carro implements Comparable<Carro>{
     private final String marca;
     private final String cor;
     private final String modelo;
-    private double valor;
+    private final double valor;
     private boolean pode_alugar;
     private String cliente;
 
@@ -45,7 +45,6 @@ public class Carro implements Comparable<Carro>{
 
     @Override
     public int compareTo(Carro carro) {
-        //return this.valor - carro.valor;
         return Double.compare(this.valor, carro.valor);
     }
 }
