@@ -6,6 +6,7 @@ public class Carro implements Comparable<Carro>{
     private final double valor;
     private boolean pode_alugar;
     private String cliente;
+    private int filial;
 
     public Carro(String placa, String marca, String cor, String modelo,
                  double valor, boolean pode_alugar){
@@ -16,32 +17,35 @@ public class Carro implements Comparable<Carro>{
         this.valor = valor;
         this.pode_alugar = pode_alugar;
         cliente = "";
+        filial = 0;
     }
-     public String getPlaca(){
+    public String getPlaca(){
         return placa;
-     }
-     public String getMarca(){
+    }
+    public String getMarca(){
         return marca;
      }
-     public String getCor(){
+    public String getCor(){
         return cor;
      }
-     public String getModelo(){
+    public String getModelo(){
         return modelo;
      }
-     public double getValor(){
+    public double getValor(){
         return valor;
      }
-     public boolean getPode_Alugar(){
+    public boolean getPode_Alugar(){
         return pode_alugar;
     }
-     public void setPode_Alugar(boolean isAlugado){
+    public int getFilial(){return filial;}
+    public void setPode_Alugar(boolean isAlugado){
         this.pode_alugar = isAlugado;
     }
     public String getCliente(){return cliente;}
     public void setCliente(String cliente){
         this.cliente = cliente;
     }
+    public void setFilial(int filial){this.filial = filial;}
 
     @Override
     public int compareTo(Carro carro) {
